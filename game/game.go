@@ -130,7 +130,7 @@ func (g *Game) Start() error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("Turn", g.currentState.Game.Turn, "Sent move: stay")
+		fmt.Println("Turn", g.currentState.Game.Turn, "Sent move:", move)
 	}
 
 	return nil

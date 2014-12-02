@@ -18,7 +18,7 @@ func main() {
 	user := server.Users[0]
 
 	// Create a new game
-	game, err := game.NewGame(config.Bots[0], user, server, "training")
+	game, err := game.NewGame(config.Bots[1], user, server, "training")
 	if err != nil {
 		panic(err)
 	}
