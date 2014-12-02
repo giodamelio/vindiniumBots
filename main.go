@@ -17,8 +17,9 @@ func main() {
 	user := config.Servers[1].Users[0]
 
 	// Create a new game
-	game := game.Game{
-		User: user,
+	game, err := game.NewGame(user, "training")
+	if err != nil {
+		panic(err)
 	}
 
 	// Start the game
