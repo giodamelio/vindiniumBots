@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/robertkrimen/otto"
 )
 
 // A game object
 type Game struct {
+	Bot          Bot
 	User         User
 	Server       Server
 	Mode         string
@@ -31,13 +34,35 @@ var modeUrls = map[string]string{
 }
 
 // Create a new game
-func NewGame(user User, server Server, mode string) (Game, error) {
+func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
 	// Make sure mode is either training or arena
 	if !(mode == "training" || mode == "arena") {
 		return Game{}, errors.New("Mode must equal 'training' or 'arena'")
 	}
 
+	// Add the bot to the vm
+	bot.vm = otto.New()
+
+	// Load the bot from the file
+	botFile, err := ioutil.ReadFile(bot.Location)
+	if err != nil {
+		return Game{}, err
+	}
+
+	// Load the bot into the vm
+	bot.vm.Run(botFile)
+
+	// Make sure the bot has a 'bot()' function
+	botFunction, err := bot.vm.Get("bot")
+	if err != nil {
+		return Game{}, err
+	}
+	if botFunction.IsUndefined() {
+		return Game{}, errors.New("Bot must have a 'bot()' function")
+	}
+
 	return Game{
+		Bot:    bot,
 		User:   user,
 		Server: server,
 		Mode:   mode,
@@ -90,8 +115,18 @@ func (g *Game) Start() error {
 			break
 		}
 
+		// Get the move from the bot
+		rawMove, err := g.Bot.vm.Run("bot()")
+		if err != nil {
+			return err
+		}
+		move, err := rawMove.ToString()
+		if err != nil {
+			return err
+		}
+
 		// Send move
-		g.currentState, err = g.sendMove("Stay")
+		g.currentState, err = g.sendMove(move)
 		if err != nil {
 			return err
 		}
