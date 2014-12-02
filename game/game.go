@@ -11,10 +11,17 @@ import (
 
 // A game object
 type Game struct {
-	User   User
-	Server Server
-	Mode   string
-	Turns  int
+	User         User
+	Server       Server
+	Mode         string
+	Turns        int
+	currentState State
+}
+
+// A move object
+type Move struct {
+	Key       string `json:"key"`
+	Direction string `json:"dir"`
 }
 
 // Mode urls
@@ -67,11 +74,59 @@ func (g *Game) Start() error {
 	if err != nil {
 		return err
 	}
-	state, err := ParseState(rawResponse)
+	g.currentState, err = ParseState(rawResponse)
 	if err != nil {
 		return err
 	}
-	fmt.Println(state)
+
+	// Print view url
+	fmt.Println("Watch the game at", g.currentState.ViewUrl)
+
+	// Loop until the game is done or we run into an error
+	for {
+		// Check to see if the game is done
+		if g.currentState.Game.Finished {
+			fmt.Println("Game complete")
+			break
+		}
+
+		// Send move
+		g.currentState, err = g.sendMove("Stay")
+		if err != nil {
+			return err
+		}
+		fmt.Println("Turn", g.currentState.Game.Turn, "Sent move: stay")
+	}
 
 	return nil
+}
+
+// Send a move to the server
+func (g *Game) sendMove(direction string) (State, error) {
+	// Convert data into json string
+	reqData, err := json.Marshal(Move{
+		Direction: direction,
+		Key:       g.User.Key,
+	})
+	if err != nil {
+		return State{}, err
+	}
+
+	// Send request to the server
+	response, err := http.Post(g.currentState.PlayUrl, "application/json", bytes.NewReader(reqData))
+	if err != nil {
+		return State{}, err
+	}
+
+	// Parse the response and set it as the current state
+	rawResponse, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return State{}, err
+	}
+	state, err := ParseState(rawResponse)
+	if err != nil {
+		return State{}, err
+	}
+
+	return state, nil
 }

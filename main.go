@@ -18,13 +18,15 @@ func main() {
 	user := server.Users[0]
 
 	// Create a new game
-	game, err := game.NewGame(user, server, "training")
-	if err != nil {
-		panic(err)
+	game := game.Game{
+		User:   user,
+		Server: server,
+		Mode:   "training",
+		Turns:  20,
 	}
 
 	// Start the game
-	err = game.Start()
+	err := game.Start()
 	if err != nil {
 		panic(err)
 	}
