@@ -1,42 +1,44 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"flag"
+	"io/ioutil"
 
-	"github.com/robertkrimen/otto"
+	"github.com/giodamelio/vindiniumBots/game"
 )
 
 func main() {
-	// Run a go function in javascript
-	vm := otto.New()
+	// Load the config file
+	configFileLocation := flag.String("config", "config.json", "The location of the config file")
+	config := loadConfig(configFileLocation)
 
-	// A simple function to double an integet
-	vm.Set("double", func(call otto.FunctionCall) otto.Value {
-		value, _ := call.Argument(0).ToInteger()
-		result, _ := vm.ToValue(value * 2)
-		return result
-	})
+	// Get our test user
+	user := config.Servers[1].Users[0]
 
-	// Run some code that uses our function
-	vm.Run(`
-		var test = double(2);
-	`)
+	// Create a new game
+	game := game.Game{
+		User: user,
+	}
 
-	// Print the output
-	value, _ := vm.Get("test")
-	fmt.Println(value)
+	// Start the game
+	game.Start()
+}
 
-	// Run a javascipt function in go
-	vm2 := otto.New()
+// Load the config file
+func loadConfig(filename *string) game.Config {
+	// Read the file
+	configFile, err := ioutil.ReadFile(*filename)
+	if err != nil {
+		panic(err)
+	}
 
-	// Create our function
-	vm2.Run(`
-		var double = function(number) {
-			return number * 2
-		}
-	`)
+	// Decode it
+	var config game.Config
+	err = json.Unmarshal(configFile, &config)
+	if err != nil {
+		panic(err)
+	}
 
-	// Run our function
-	value2, _ := vm2.Run("double(4)")
-	fmt.Println(value2)
+	return config
 }
