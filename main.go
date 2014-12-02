@@ -13,11 +13,12 @@ func main() {
 	configFileLocation := flag.String("config", "config.json", "The location of the config file")
 	config := loadConfig(configFileLocation)
 
-	// Get our test user
-	user := config.Servers[1].Users[0]
+	// Get our test info
+	server := config.Servers[1]
+	user := server.Users[0]
 
 	// Create a new game
-	game, err := game.NewGame(user, "training")
+	game, err := game.NewGame(user, server, "training")
 	if err != nil {
 		panic(err)
 	}
