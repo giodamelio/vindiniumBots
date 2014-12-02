@@ -63,8 +63,15 @@ func (g *Game) Start() error {
 	}
 
 	// Parse the response
-	rawResponse, _ := ioutil.ReadAll(response.Body)
+	rawResponse, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	state, err := ParseState(rawResponse)
+	if err != nil {
+		return err
+	}
+	fmt.Println(state)
 
-	fmt.Println(string(rawResponse))
 	return nil
 }

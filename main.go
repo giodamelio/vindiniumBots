@@ -24,7 +24,10 @@ func main() {
 	}
 
 	// Start the game
-	game.Start()
+	err = game.Start()
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Load the config file
