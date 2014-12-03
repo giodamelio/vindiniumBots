@@ -115,6 +115,9 @@ func (g *Game) Start() error {
 			break
 		}
 
+		// Parse the map
+		_ = parseMap(g.currentState.Game.Board)
+
 		// Get the move from the bot
 		rawMove, err := g.Bot.vm.Run("bot()")
 		if err != nil {
