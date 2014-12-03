@@ -1,6 +1,6 @@
 package game
 
-import "github.com/robertkrimen/otto"
+import "github.com/aarzilli/golua/lua"
 
 // Config object
 type Config struct {
@@ -25,5 +25,5 @@ type User struct {
 type Bot struct {
 	Name     string
 	Location string
-	vm       *otto.Otto
+	vm       *lua.State
 }

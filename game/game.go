@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/robertkrimen/otto"
+	"github.com/stevedonovan/luar"
 )
 
 // A game object
@@ -41,24 +41,15 @@ func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
 	}
 
 	// Add the bot to the vm
-	bot.vm = otto.New()
+	bot.vm = luar.Init()
 
 	// Load the bot from the file
-	botFile, err := ioutil.ReadFile(bot.Location)
-	if err != nil {
-		return Game{}, err
-	}
+	bot.vm.DoFile(bot.Location)
 
-	// Load the bot into the vm
-	bot.vm.Run(botFile)
-
-	// Make sure the bot has a 'bot()' function
-	botFunction, err := bot.vm.Get("bot")
-	if err != nil {
-		return Game{}, err
-	}
-	if botFunction.IsUndefined() {
-		return Game{}, errors.New("Bot must have a 'bot()' function")
+	// Make sure there is a bot function
+	botFunction := luar.NewLuaObjectFromName(bot.vm, "bot")
+	if botFunction.Type != "function" {
+		return Game{}, errors.New("Bot(" + bot.Location + ") must have a 'bot()' function")
 	}
 
 	return Game{
@@ -72,6 +63,9 @@ func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
 
 // Start the game
 func (g *Game) Start() error {
+	// Clean up the lua vm when the game is done
+	defer g.Bot.vm.Close()
+
 	// Start the game on the server
 	type NewGame struct {
 		Key   string `json:"key"`
@@ -119,14 +113,12 @@ func (g *Game) Start() error {
 		_ = parseMap(g.currentState.Game.Board)
 
 		// Get the move from the bot
-		rawMove, err := g.Bot.vm.Run("bot()")
+		botFunction := luar.NewLuaObjectFromName(g.Bot.vm, "bot")
+		rawMove, err := botFunction.Call()
 		if err != nil {
 			return err
 		}
-		move, err := rawMove.ToString()
-		if err != nil {
-			return err
-		}
+		move := rawMove.(string)
 
 		// Send move
 		g.currentState, err = g.sendMove(move)
