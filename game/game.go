@@ -40,31 +40,22 @@ func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
 		return Game{}, errors.New("Mode must equal 'training' or 'arena'")
 	}
 
-	// Add the bot to the vm
-	bot.vm = luar.Init()
-
-	// Load the bot from the file
-	bot.vm.DoFile(bot.Location)
-
-	// Expose the tile constants
-	luar.Register(bot.vm, "", luar.Map{
-		"tileType": tileType,
-		"tileDraw": tileDraw,
-	})
-
-	// Make sure there is a bot function
-	botFunction := luar.NewLuaObjectFromName(bot.vm, "bot")
-	if botFunction.Type != "function" {
-		return Game{}, errors.New("Bot(" + bot.Location + ") must have a 'bot()' function")
-	}
-
-	return Game{
+	// Create our game
+	game := Game{
 		Bot:    bot,
 		User:   user,
 		Server: server,
 		Mode:   mode,
 		Turns:  300,
-	}, nil
+	}
+
+	// Set up our lua vm
+	err := game.createLuaVM()
+	if err != nil {
+		return Game{}, err
+	}
+
+	return game, nil
 }
 
 // Start the game
