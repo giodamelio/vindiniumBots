@@ -110,11 +110,13 @@ func (g *Game) Start() error {
 		}
 
 		// Parse the map
-		_ = parseMap(g.currentState.Game.Board)
+		parsedMap := parseMap(g.currentState.Game.Board)
 
 		// Get the move from the bot
 		botFunction := luar.NewLuaObjectFromName(g.Bot.vm, "bot")
-		rawMove, err := botFunction.Call()
+		luaTiles := luar.NewLuaObjectFromValue(g.Bot.vm, parsedMap.Tiles)
+		luaSize := luar.NewLuaObjectFromValue(g.Bot.vm, parsedMap.Size)
+		rawMove, err := botFunction.Call(luaTiles, luaSize)
 		if err != nil {
 			return err
 		}

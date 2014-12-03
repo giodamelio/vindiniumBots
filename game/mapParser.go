@@ -1,7 +1,5 @@
 package game
 
-import "fmt"
-
 // A map object
 type Map struct {
 	Size  int
@@ -33,8 +31,6 @@ func parseMap(board Board) Map {
 	outMap := Map{
 		Size: board.Size,
 	}
-
-	fmt.Println("Map size:", board.Size)
 
 	// The new board
 	var tiles [][]int
