@@ -4,8 +4,9 @@ import "github.com/aarzilli/golua/lua"
 
 // Config object
 type Config struct {
-	Servers []Server
-	Bots    []Bot
+	Servers            []Server
+	Bots               []Bot
+	MaxConcurrentGames int
 }
 
 // Server object
