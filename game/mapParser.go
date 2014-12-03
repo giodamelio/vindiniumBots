@@ -7,20 +7,20 @@ type Map struct {
 }
 
 // The tile types
-const (
-	EMPTY        = 0
-	WOOD         = 1
-	TAVERN       = 2
-	HERO_1       = 3
-	HERO_2       = 4
-	HERO_3       = 5
-	HERO_4       = 6
-	MINE_NEUTRAL = 7
-	MINE_1       = 8
-	MINE_2       = 9
-	MINE_3       = 10
-	MINE_4       = 11
-)
+var tileType = map[string]int{
+	"EMPTY":        0,
+	"WOOD":         1,
+	"TAVERN":       2,
+	"HERO_1":       3,
+	"HERO_2":       4,
+	"HERO_3":       5,
+	"HERO_4":       6,
+	"MINE_NEUTRAL": 7,
+	"MINE_1":       8,
+	"MINE_2":       9,
+	"MINE_3":       10,
+	"MINE_4":       11,
+}
 
 // How to draw the tiles
 var tileDraw = []string{"  ", "##", "[]", "@1", "@2", "@3", "@4", "$-", "$1", "$2", "$3", "$4"}
@@ -46,32 +46,32 @@ func parseMap(board Board) Map {
 			var tile int
 			switch rune(rawTile[0]) {
 			case '#':
-				tile = WOOD
+				tile = tileType["WOOD"]
 			case '[':
-				tile = TAVERN
+				tile = tileType["TAVERN"]
 			case '@':
 				switch rune(rawTile[1]) {
 				case '1':
-					tile = HERO_1
+					tile = tileType["HERO_1"]
 				case '2':
-					tile = HERO_2
+					tile = tileType["HERO_2"]
 				case '3':
-					tile = HERO_3
+					tile = tileType["HERO_3"]
 				case '4':
-					tile = HERO_4
+					tile = tileType["HERO_4"]
 				}
 			case '$':
 				switch rune(rawTile[1]) {
 				case '-':
-					tile = MINE_NEUTRAL
+					tile = tileType["MINE_NEUTRAL"]
 				case '1':
-					tile = MINE_1
+					tile = tileType["MINE_1"]
 				case '2':
-					tile = MINE_2
+					tile = tileType["MINE_2"]
 				case '3':
-					tile = MINE_3
+					tile = tileType["MINE_3"]
 				case '4':
-					tile = MINE_4
+					tile = tileType["MINE_4"]
 				}
 			}
 			row = append(row, tile)

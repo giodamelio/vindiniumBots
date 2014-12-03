@@ -46,6 +46,12 @@ func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
 	// Load the bot from the file
 	bot.vm.DoFile(bot.Location)
 
+	// Expose the tile constants
+	luar.Register(bot.vm, "", luar.Map{
+		"tileType": tileType,
+		"tileDraw": tileDraw,
+	})
+
 	// Make sure there is a bot function
 	botFunction := luar.NewLuaObjectFromName(bot.vm, "bot")
 	if botFunction.Type != "function" {
