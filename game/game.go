@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/bitly/go-simplejson"
+	"github.com/gosexy/redis"
 	"github.com/stevedonovan/luar"
 )
 
@@ -19,6 +21,7 @@ type Game struct {
 	Mode         string
 	Turns        int
 	currentState *simplejson.Json
+	redis        *redis.Client
 }
 
 // A move object
@@ -34,7 +37,7 @@ var modeUrls = map[string]string{
 }
 
 // Create a new game
-func NewGame(bot Bot, server Server, user User, mode string, turns int) (Game, error) {
+func NewGame(r *redis.Client, bot Bot, server Server, user User, mode string, turns int) (Game, error) {
 	// Make sure mode is either training or arena
 	if !(mode == "training" || mode == "arena") {
 		return Game{}, errors.New("Mode must equal 'training' or 'arena'")
@@ -47,6 +50,7 @@ func NewGame(bot Bot, server Server, user User, mode string, turns int) (Game, e
 		Server: server,
 		Mode:   mode,
 		Turns:  turns,
+		redis:  r,
 	}
 
 	// Set up our lua vm
@@ -95,6 +99,10 @@ func (g *Game) Start() error {
 		return err
 	}
 
+	// Game start event
+	gameId, _ := g.currentState.GetPath("game", "id").String()
+	g.sendEvent(fmt.Sprintf("[%s] Game start", gameId))
+
 	// Loop until the game is done or we run into an error
 	for {
 		// Check to see if the game is done
@@ -117,12 +125,24 @@ func (g *Game) Start() error {
 		}
 		move := rawMove.(string)
 
+		// Send turn message
+		turnNum, _ := g.currentState.GetPath("game", "turn").Int()
+		g.sendEvent(fmt.Sprintf(
+			"[%s] Turn: %d, Move: %s",
+			gameId,
+			turnNum,
+			move,
+		))
+
 		// Send move
 		g.currentState, err = g.sendMove(move)
 		if err != nil {
 			return err
 		}
 	}
+
+	// Game end event
+	g.sendEvent(fmt.Sprintf("[%s] Game end", gameId))
 
 	return nil
 }
@@ -156,4 +176,9 @@ func (g *Game) sendMove(direction string) (*simplejson.Json, error) {
 	}
 
 	return state, nil
+}
+
+func (g *Game) sendEvent(event string) {
+	g.redis.LPush("log", event)
+	g.redis.LTrim("log", 0, 10000)
 }

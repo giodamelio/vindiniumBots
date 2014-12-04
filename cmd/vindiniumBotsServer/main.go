@@ -128,6 +128,7 @@ func runGame(config *simplejson.Json, gameInfo string) error {
 	// Create a new game
 	turns, _ := strconv.Atoi(split[4])
 	game, err := game.NewGame(
+		r,
 		bot,
 		server,
 		user,
