@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/stevedonovan/luar"
 )
 
@@ -18,7 +19,7 @@ type Game struct {
 	Server       Server
 	Mode         string
 	Turns        int
-	currentState State
+	currentState *simplejson.Json
 }
 
 // A move object
@@ -90,24 +91,27 @@ func (g *Game) Start() error {
 	if err != nil {
 		return err
 	}
-	g.currentState, err = ParseState(rawResponse)
+	g.currentState, err = simplejson.NewJson(rawResponse)
 	if err != nil {
 		return err
 	}
 
 	// Print view url
-	fmt.Println("Watch the game at", g.currentState.ViewUrl)
+	viewUrl, _ := g.currentState.Get("viewUrl").String()
+	fmt.Println("Watch the game at", viewUrl)
 
 	// Loop until the game is done or we run into an error
 	for {
 		// Check to see if the game is done
-		if g.currentState.Game.Finished {
+		isFinished, _ := g.currentState.GetPath("game", "finished").Bool()
+		if isFinished {
 			fmt.Println("Game complete")
 			break
 		}
 
 		// Parse the map
-		parsedMap := parseMap(g.currentState.Game.Board)
+		board := g.currentState.GetPath("game", "board")
+		parsedMap := parseMap(board)
 
 		// Get the move from the bot
 		botFunction := luar.NewLuaObjectFromName(g.Bot.vm, "bot")
@@ -124,37 +128,39 @@ func (g *Game) Start() error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("Turn", g.currentState.Game.Turn, "Sent move:", move)
+		turn, _ := g.currentState.GetPath("game", "turn").Int()
+		fmt.Println("Turn", turn, "Sent move:", move)
 	}
 
 	return nil
 }
 
 // Send a move to the server
-func (g *Game) sendMove(direction string) (State, error) {
+func (g *Game) sendMove(direction string) (*simplejson.Json, error) {
 	// Convert data into json string
 	reqData, err := json.Marshal(Move{
 		Direction: direction,
 		Key:       g.User.Key,
 	})
 	if err != nil {
-		return State{}, err
+		return &simplejson.Json{}, err
 	}
 
 	// Send request to the server
-	response, err := http.Post(g.currentState.PlayUrl, "application/json", bytes.NewReader(reqData))
+	playUrl, _ := g.currentState.Get("playUrl").String()
+	response, err := http.Post(playUrl, "application/json", bytes.NewReader(reqData))
 	if err != nil {
-		return State{}, err
+		return &simplejson.Json{}, err
 	}
 
 	// Parse the response and set it as the current state
 	rawResponse, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return State{}, err
+		return &simplejson.Json{}, err
 	}
-	state, err := ParseState(rawResponse)
+	state, err := simplejson.NewJson(rawResponse)
 	if err != nil {
-		return State{}, err
+		return &simplejson.Json{}, err
 	}
 
 	return state, nil

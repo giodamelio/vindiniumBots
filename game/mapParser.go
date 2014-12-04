@@ -1,5 +1,7 @@
 package game
 
+import "github.com/bitly/go-simplejson"
+
 // A map object
 type Map struct {
 	Size  int
@@ -26,18 +28,20 @@ var tileType = map[string]int{
 var tileDraw = []string{"  ", "##", "[]", "@1", "@2", "@3", "@4", "$-", "$1", "$2", "$3", "$4"}
 
 // Parse a map
-func parseMap(board Board) Map {
+func parseMap(board *simplejson.Json) Map {
 	// Create our map
+	size, _ := board.Get("size").Int()
 	outMap := Map{
-		Size: board.Size,
+		Size: size,
 	}
 
 	// The new board
 	var tiles [][]int
 
 	// Convert to map type
-	for y := 0; y < len(board.Tiles); y = y + board.Size*2 {
-		line := board.Tiles[y : y+board.Size*2]
+	rawTiles, _ := board.Get("tiles").String()
+	for y := 0; y < len(rawTiles); y = y + size*2 {
+		line := rawTiles[y : y+size*2]
 		var row []int
 		for x := 0; x < len(line); x = x + 2 {
 			rawTile := line[x : x+2]
