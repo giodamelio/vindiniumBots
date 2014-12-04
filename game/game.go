@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -96,16 +95,11 @@ func (g *Game) Start() error {
 		return err
 	}
 
-	// Print view url
-	viewUrl, _ := g.currentState.Get("viewUrl").String()
-	fmt.Println("Watch the game at", viewUrl)
-
 	// Loop until the game is done or we run into an error
 	for {
 		// Check to see if the game is done
 		isFinished, _ := g.currentState.GetPath("game", "finished").Bool()
 		if isFinished {
-			fmt.Println("Game complete")
 			break
 		}
 
@@ -128,8 +122,6 @@ func (g *Game) Start() error {
 		if err != nil {
 			return err
 		}
-		turn, _ := g.currentState.GetPath("game", "turn").Int()
-		fmt.Println("Turn", turn, "Sent move:", move)
 	}
 
 	return nil
