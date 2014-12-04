@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strconv"
@@ -48,7 +49,10 @@ func main() {
 		fmt.Println("Starting goroutine", i+1)
 		go func() {
 			for newGame := range gameChan {
-				runGame(config, newGame[1])
+				err := runGame(config, newGame[1])
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
 		}()
 	}
@@ -68,15 +72,12 @@ func main() {
 }
 
 // Run a game
-func runGame(config *simplejson.Json, gameInfo string) {
-	fmt.Println("Starting game")
-
+func runGame(config *simplejson.Json, gameInfo string) error {
 	// Connect to redis
 	r := redis.New()
 	err := r.Connect("localhost", 6379)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	defer r.Close()
 
@@ -88,6 +89,9 @@ func runGame(config *simplejson.Json, gameInfo string) {
 
 	// Parse game info
 	split := strings.Split(gameInfo, ":")
+	if len(split) != 5 {
+		return errors.New("Input MUST have 5 sections")
+	}
 
 	// Get our test info
 	botIndex, _ := strconv.Atoi(split[0])
@@ -122,20 +126,28 @@ func runGame(config *simplejson.Json, gameInfo string) {
 	}
 
 	// Create a new game
-	game, err := game.NewGame(bot, server, user, split[3])
+	turns, _ := strconv.Atoi(split[4])
+	game, err := game.NewGame(
+		bot,
+		server,
+		user,
+		split[3],
+		turns,
+	)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	game.Turns = 20
 
 	// Start the game
+	fmt.Println("Starting game")
 	err = game.Start()
+	fmt.Println("Game complete")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Decrement game counter
 	r.Decr("RunningGames")
 
-	fmt.Println("Game complete")
+	return nil
 }
