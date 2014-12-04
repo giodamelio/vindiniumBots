@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/giodamelio/vindiniumBots/config"
@@ -66,7 +68,9 @@ func main() {
 }
 
 // Run a game
-func runGame(config *simplejson.Json, newGame string) {
+func runGame(config *simplejson.Json, gameInfo string) {
+	fmt.Println("Starting game")
+
 	// Connect to redis
 	r := redis.New()
 	err := r.Connect("localhost", 6379)
@@ -77,16 +81,21 @@ func runGame(config *simplejson.Json, newGame string) {
 	defer r.Close()
 
 	// Increment game counter
-	fmt.Println("Starting game")
 	_, err = r.Incr("RunningGames")
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	// Parse game info
+	split := strings.Split(gameInfo, ":")
+
 	// Get our test info
-	botConfig := config.Get("bots").GetIndex(1)
-	serverConfig := config.Get("servers").GetIndex(1)
-	userConfig := serverConfig.Get("users").GetIndex(0)
+	botIndex, _ := strconv.Atoi(split[0])
+	botConfig := config.Get("bots").GetIndex(botIndex)
+	serverIndex, _ := strconv.Atoi(split[1])
+	serverConfig := config.Get("servers").GetIndex(serverIndex)
+	userIndex, _ := strconv.Atoi(split[2])
+	userConfig := serverConfig.Get("users").GetIndex(userIndex)
 
 	// Create bot
 	name, _ := botConfig.Get("name").String()
@@ -94,14 +103,6 @@ func runGame(config *simplejson.Json, newGame string) {
 	bot := game.Bot{
 		Name:     name,
 		Location: location,
-	}
-
-	// Create user
-	username, _ := userConfig.Get("username").String()
-	key, _ := userConfig.Get("key").String()
-	user := game.User{
-		Username: username,
-		Key:      key,
 	}
 
 	// Create server
@@ -112,8 +113,16 @@ func runGame(config *simplejson.Json, newGame string) {
 		Url:  url,
 	}
 
+	// Create user
+	username, _ := userConfig.Get("username").String()
+	key, _ := userConfig.Get("key").String()
+	user := game.User{
+		Username: username,
+		Key:      key,
+	}
+
 	// Create a new game
-	game, err := game.NewGame(bot, user, server, "training")
+	game, err := game.NewGame(bot, server, user, split[3])
 	if err != nil {
 		panic(err)
 	}
@@ -127,4 +136,6 @@ func runGame(config *simplejson.Json, newGame string) {
 
 	// Decrement game counter
 	r.Decr("RunningGames")
+
+	fmt.Println("Game complete")
 }

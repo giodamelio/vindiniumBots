@@ -34,7 +34,7 @@ var modeUrls = map[string]string{
 }
 
 // Create a new game
-func NewGame(bot Bot, user User, server Server, mode string) (Game, error) {
+func NewGame(bot Bot, server Server, user User, mode string) (Game, error) {
 	// Make sure mode is either training or arena
 	if !(mode == "training" || mode == "arena") {
 		return Game{}, errors.New("Mode must equal 'training' or 'arena'")
