@@ -1,0 +1,17 @@
+{
+  "name": "vindiniumBots",
+  "version": "0.1.0",
+  "description": "My vindinium bots",
+  "author": "Gio d'Amelio",
+  "private": true,
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giodamelio/vindiniumBots.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/giodamelio/vindiniumBots/issues"
+  },
+  "homepage": "https://github.com/giodamelio/vindiniumBots"
+}
