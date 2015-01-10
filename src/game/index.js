@@ -9,17 +9,25 @@ class Game {
         this.turns = turns;
         this.map = map;
     }
+}
 
+module.exports.Game = Game;
+
+class GameRunner {
+    constructor(game) {
+        this.game = game;
+    }
+    
     // Start the game
     start() {
         var self = this;
         request({
             method: "POST",
-            url: this.url + "/api/" + this.mode,
+            url: this.game.url + "/api/" + this.game.mode,
             json: {
-                key: this.key,
-                turns: this.turns,
-                map: this.map
+                key: this.game.key,
+                turns: this.game.turns,
+                map: this.game.map
             }
         }, function(error, response, body) {
             console.log(body.viewUrl);
@@ -43,7 +51,7 @@ class Game {
             method: "POST",
             url: state.playUrl,
             json: {
-                key: this.key,
+                key: this.game.key,
                 dir: "Stay"
             }
         }, function(error, response, body) {
@@ -52,5 +60,5 @@ class Game {
     }
 }
 
-module.exports = Game;
+module.exports.GameRunner = GameRunner;
 

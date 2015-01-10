@@ -4,7 +4,7 @@ var commander = require("commander");
 
 var version = require("../package.json").version;
 
-var Game = require("./game/index.js");
+var game = require("./game/index.js");
 
 commander
     .version(version);
@@ -21,13 +21,16 @@ commander
         var config = require(configFileLocation);
 
         // Start a game
-        var game = new Game(
+        var newGame = new game.Game(
             config.servers[0].users[0].key,
             config.servers[0].url,
             "training",
             20
         );
-        game.start();
+        console.log(newGame.tmp(10));
+
+        var newGameRunner = new game.GameRunner(newGame);
+        newGameRunner.start();
     });
 
 commander
