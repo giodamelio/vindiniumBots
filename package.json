@@ -19,6 +19,7 @@
     "gulp-6to5": "^2.0.0"
   },
   "dependencies": {
-    "commander": "^2.6.0"
+    "commander": "^2.6.0",
+    "request": "^2.51.0"
   }
 }
