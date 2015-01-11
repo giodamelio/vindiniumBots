@@ -27,7 +27,6 @@ commander
             "training",
             20
         );
-        console.log(newGame.tmp(10));
 
         var newGameRunner = new game.GameRunner(newGame);
         newGameRunner.start();

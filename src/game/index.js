@@ -20,7 +20,6 @@ class GameRunner {
     
     // Start the game
     start() {
-        var self = this;
         request({
             method: "POST",
             url: this.game.url + "/api/" + this.game.mode,
@@ -29,16 +28,14 @@ class GameRunner {
                 turns: this.game.turns,
                 map: this.game.map
             }
-        }, function(error, response, body) {
+        }, (error, response, body) => {
             console.log(body.viewUrl);
-            self._respond(body);
+            this._respond(body);
         });
     }
 
     // Make a move
     _respond(state) {
-        var self = this;
-
         // If the game is done, exit
         if (state.game.finished) {
             console.log("Game finished");
@@ -54,8 +51,8 @@ class GameRunner {
                 key: this.game.key,
                 dir: "Stay"
             }
-        }, function(error, response, body) {
-            self._respond(body);
+        }, (error, response, body) => {
+            this._respond(body);
         });
     }
 }
