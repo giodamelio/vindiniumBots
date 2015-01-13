@@ -1,8 +1,21 @@
 var request = require("request");
+var joi = require("joi");
+
+var Game = require("./game");
 
 class Runner {
-    constructor(game) {
-        this.game = game;
+    constructor(options) {
+        // Validate the options
+        var optionsSchema = joi.object().keys({
+            game: joi
+                .object()
+                .type(Game)
+                .required()
+        });
+        joi.assert(options, optionsSchema);
+
+        // Add options to class
+        this.game = options.game;
     }
     
     // Start the game

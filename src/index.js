@@ -40,7 +40,9 @@ commander
             bot: new RandomBot()
         });
 
-        var runner = new Runner(game);
+        var runner = new Runner({
+            game
+        });
         runner.start();
     });
 
