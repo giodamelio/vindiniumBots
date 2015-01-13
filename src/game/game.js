@@ -38,6 +38,7 @@ class Game {
         this.server_url = options.server_url;
         this.mode = options.mode;
         this.turns = options.turns;
+        this.bot = options.bot;
     }
 }
 

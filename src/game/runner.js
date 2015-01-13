@@ -16,7 +16,6 @@ class Runner {
                 map: this.game.map
             }
         }, (error, response, body) => {
-            console.log(body.viewUrl);
             this._respond(body);
         });
     }
@@ -25,18 +24,19 @@ class Runner {
     _respond(state) {
         // If the game is done, exit
         if (state.game.finished) {
-            console.log("Game finished");
             return;
         }
 
+        // Get the next turn from the bot
+        var move = this.game.bot.move();
+
         // Send the next turn
-        console.log("Sending move: stay");
         request({
             method: "POST",
             url: state.playUrl,
             json: {
                 key: this.game.key,
-                dir: "Stay"
+                dir: move
             }
         }, (error, response, body) => {
             this._respond(body);

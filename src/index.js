@@ -24,6 +24,9 @@ commander
 
         // Create a simple bot
         class StayBot extends BaseBot {
+            move() {
+                return "Stay";
+            }
         }
 
         // Start a game
