@@ -39,6 +39,11 @@ class Runner {
 
     // Make a move
     _respond(state) {
+        if (state === "Vindinium - Time out! You must play faster") {
+            this.game.bot.crashed("Timeout");
+            return;
+        }
+            
         // If the game is done, exit
         if (state.game.finished) {
             // If we crashed tell the bot

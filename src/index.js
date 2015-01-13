@@ -44,9 +44,9 @@ commander
             end(winnerName, winnerInfo) {
                 log.info("Game end. Winner:", winnerName);
             }
-
-            crashed() {
-                log.error("Game crashed");
+            
+            crashed(reason) {
+                log.error("Game crashed.", reason);
             }
         }
 
