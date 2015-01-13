@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "commander": "^2.6.0",
+    "joi": "^5.1.0",
     "request": "^2.51.0"
   }
 }

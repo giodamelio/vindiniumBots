@@ -21,12 +21,13 @@ commander
         var config = require(configFileLocation);
 
         // Start a game
-        var newGame = new game.Game(
-            config.servers[0].users[0].key,
-            config.servers[0].url,
-            "training",
-            20
-        );
+        var newGame = new game.Game({
+            name: "giodamelio",
+            key: config.servers[0].users[0].key,
+            server_url: config.servers[0].url,
+            mode: "training",
+            turns: 20
+        });
 
         var newGameRunner = new game.GameRunner(newGame);
         newGameRunner.start();
