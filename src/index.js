@@ -1,6 +1,7 @@
 var path = require("path");
 
 var commander = require("commander");
+var bunyan = require("bunyan");
 
 var version = require("../package.json").version;
 
@@ -22,11 +23,30 @@ commander
             env.config || path.join(process.cwd(), "./config.json");
         var config = require(configFileLocation);
 
+        // Create logger
+        var log = bunyan.createLogger({
+            name: "vindiniumBots"
+        });
+
         // Create a simple random bot
         class RandomBot extends BaseBot {
+            start(viewUrl) {
+                log.info("Game start. View at:", viewUrl);
+            }
+
             move() {
                 var choices = ["North", "East", "South", "West", "Stay"];
-                return choices[Math.floor(Math.random()*choices.length)];
+                var move = choices[Math.floor(Math.random()*choices.length)];
+                log.info("Sent move:", move);
+                return move;
+            }
+
+            end(winnerName, winnerInfo) {
+                log.info("Game end. Winner:", winnerName);
+            }
+
+            crashed() {
+                log.error("Game crashed");
             }
         }
 

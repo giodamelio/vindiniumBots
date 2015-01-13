@@ -29,6 +29,10 @@ class Runner {
                 map: this.game.map
             }
         }, (error, response, body) => {
+            // Send start event to the bot
+            this.game.bot.start(body.viewUrl);
+
+            // Send out move
             this._respond(body);
         });
     }
@@ -37,6 +41,32 @@ class Runner {
     _respond(state) {
         // If the game is done, exit
         if (state.game.finished) {
+            // If we crashed tell the bot
+            if (state.hero.crashed) {
+                this.game.bot.crashed();
+                return;
+            }
+
+            // Calculate the winner
+            // Sort by gold count
+            var heroesByGold = state.game.heroes.sort(function(a, b) {
+                if (a.gold < b.gold) return 1;
+                if (a.gold > b.gold) return -1;
+                if (a.gold === b.gold) return 0;
+            });
+            var winner = heroesByGold[0];
+
+            if (winner.gold === 0) {
+                // Draw
+                this.game.bot.end("Draw", {});
+            } else if (heroesByGold[0].gold === heroesByGold[1].gold) {
+                // Two winners = draw
+                this.game.bot.end("Draw", {});
+            } else {
+                // Single winner
+                this.game.bot.end(winner.name, winner);
+            }
+
             return;
         }
 
