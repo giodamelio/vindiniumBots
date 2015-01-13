@@ -22,10 +22,11 @@ commander
             env.config || path.join(process.cwd(), "./config.json");
         var config = require(configFileLocation);
 
-        // Create a simple bot
-        class StayBot extends BaseBot {
+        // Create a simple random bot
+        class RandomBot extends BaseBot {
             move() {
-                return "Stay";
+                var choices = ["North", "East", "South", "West", "Stay"];
+                return choices[Math.floor(Math.random()*choices.length)];
             }
         }
 
@@ -36,7 +37,7 @@ commander
             server_url: config.servers[0].url,
             mode: "training",
             turns: 20,
-            bot: new StayBot()
+            bot: new RandomBot()
         });
 
         var runner = new Runner(game);
