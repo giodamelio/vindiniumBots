@@ -4,7 +4,8 @@ var commander = require("commander");
 
 var version = require("../package.json").version;
 
-var game = require("./game/index.js");
+var Game = require("./game/game");
+var Runner = require("./game/runner");
 
 commander
     .version(version);
@@ -21,7 +22,7 @@ commander
         var config = require(configFileLocation);
 
         // Start a game
-        var newGame = new game.Game({
+        var game = new Game({
             name: "giodamelio",
             key: config.servers[0].users[0].key,
             server_url: config.servers[0].url,
@@ -29,8 +30,8 @@ commander
             turns: 20
         });
 
-        var newGameRunner = new game.GameRunner(newGame);
-        newGameRunner.start();
+        var runner = new Runner(game);
+        runner.start();
     });
 
 commander
