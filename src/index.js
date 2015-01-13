@@ -41,8 +41,12 @@ commander
                 return move;
             }
 
-            end(winnerName, winnerInfo) {
-                log.info("Game end. Winner:", winnerName);
+            end(winner) {
+                if (typeof winner === "string") {
+                    log.info("Game end. Winner:", winner);
+                } else {
+                    log.info("Game end. Winner:", winner.name);
+                }
             }
             
             crashed(reason) {
@@ -64,6 +68,26 @@ commander
             game
         });
         runner.start();
+
+        runner.on("started", function() {
+            console.log("Game started");
+        });
+
+        runner.on("move", function(state, move) {
+            console.log(move);
+        });
+
+        runner.on("ended", function(winner) {
+            if (typeof winner === "string") {
+                console.log("Game end. Winner:", winner);
+            } else {
+                console.log("Game end. Winner:", winner.name);
+            }
+        });
+
+        runner.on("crashed", function(reason) {
+            console.log("Crashed", reason);
+        });
     });
 
 commander
