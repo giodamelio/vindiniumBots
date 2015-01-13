@@ -6,6 +6,7 @@ var version = require("../package.json").version;
 
 var Game = require("./game/game");
 var Runner = require("./game/runner");
+var BaseBot = require("./game/baseBot");
 
 commander
     .version(version);
@@ -21,13 +22,18 @@ commander
             env.config || path.join(process.cwd(), "./config.json");
         var config = require(configFileLocation);
 
+        // Create a simple bot
+        class StayBot extends BaseBot {
+        }
+
         // Start a game
         var game = new Game({
             name: "giodamelio",
             key: config.servers[0].users[0].key,
             server_url: config.servers[0].url,
             mode: "training",
-            turns: 20
+            turns: 20,
+            bot: new StayBot()
         });
 
         var runner = new Runner(game);

@@ -1,5 +1,7 @@
 var joi = require("joi");
 
+var BaseBot = require("./baseBot");
+
 class Game {
     // Create a new game
     constructor(options) {
@@ -22,7 +24,11 @@ class Game {
                 .optional(),
             turns: joi
                 .number()
-                .optional()
+                .optional(),
+            bot: joi
+                .object()
+                .type(BaseBot)
+                .required()
         });
         joi.assert(options, optionsSchema);
 
