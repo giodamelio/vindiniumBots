@@ -49,6 +49,11 @@ class Runner {
             // If we crashed tell the bot
             if (state.hero.crashed) {
                 this.game.bot.crashed();
+
+                // Record the state
+                this._recordState({
+                    rawState: state
+                });
                 return;
             }
 
@@ -72,11 +77,19 @@ class Runner {
                 this.game.bot.end(winner.name, winner);
             }
 
+            // Save the state
+            this._recordState({
+                rawState: state
+            });
+
             return;
         }
 
         // Get the next turn from the bot
         var move = this.game.bot.move();
+
+        // Save the state and move
+        this._recordState(state, move);
 
         // Send the next turn
         request({
@@ -88,6 +101,14 @@ class Runner {
             }
         }, (error, response, body) => {
             this._respond(body);
+        });
+    }
+
+    // Save the current state of the game optionally store the move to be made
+    _recordState(state, move) {
+        this.game.states.push({
+            rawState: state,
+            move: move
         });
     }
 }

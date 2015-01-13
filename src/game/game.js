@@ -39,6 +39,9 @@ class Game {
         this.mode = options.mode;
         this.turns = options.turns;
         this.bot = options.bot;
+
+        // Keep track of turns
+        this.states = [];
     }
 }
 
