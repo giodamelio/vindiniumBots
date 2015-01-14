@@ -7,9 +7,6 @@ class Game {
     constructor(options) {
         // Validate options
         var optionsSchema = joi.object().keys({
-            name: joi
-                .string()
-                .required(),
             key: joi
                 .string()
                 .length(8)
@@ -32,7 +29,6 @@ class Game {
         joi.assert(options, optionsSchema);
 
         // Add options to class
-        this.name = options.name;
         this.key = options.key;
         this.server_url = options.server_url;
         this.mode = options.mode;
