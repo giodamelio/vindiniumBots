@@ -1,39 +1,24 @@
-var joi = require("joi");
+var jayschema = require("jayschema");
 
 var BaseBot = require("./baseBot");
+var GameSchema = require("../schemas/game");
 
 class Game {
     // Create a new game
     constructor(options) {
         // Validate options
-        var optionsSchema = joi.object().keys({
-            key: joi
-                .string()
-                .length(8)
-                .required(),
-            server_url: joi
-                .string()
-                .required(),
-            mode: joi
-                .string()
-                .allow("training", "arena")
-                .default("training")
-                .optional(),
-            turns: joi
-                .number()
-                .optional(),
-            botPath: joi
-                .string()
-                .required()
-        });
-        joi.assert(options, optionsSchema);
+        var validator = new jayschema();
+        var errs = validator.validate(options, GameSchema);
+        if (errs.length > 0) {
+            throw err;
+        }
 
         // Add options to class
         this.key = options.key;
         this.server_url = options.server_url;
         this.mode = options.mode;
         this.turns = options.turns;
-        this.botPath = options.botPath;
+        this.bot_path = options.bot_path;
 
         // Keep track of turns
         this.states = [];

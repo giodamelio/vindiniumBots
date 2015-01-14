@@ -2,29 +2,16 @@ var path = require("path");
 var EventEmitter = require("events").EventEmitter;
 
 var request = require("request");
-var joi = require("joi");
 
 var Game = require("./game");
 
 class Runner extends EventEmitter {
     constructor(options) {
-        // Validate the options
-        var optionsSchema = joi.object().keys({
-            game: joi
-                .object()
-                .type(Game)
-                .required(),
-            log: joi
-                .object()
-                .required()
-        });
-        joi.assert(options, optionsSchema);
-
         // Add options to class
         this.game = options.game;
 
         // Make an instence of our bot
-        var bot = require(path.resolve(process.cwd(), this.game.botPath));
+        var bot = require(path.resolve(process.cwd(), this.game.bot_path));
         this.game.bot = new bot(options.log);
     }
     
