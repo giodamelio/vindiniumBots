@@ -15,32 +15,6 @@ module.exports = function(commander, log) {
                 env.config || path.join(process.cwd(), "./config.json");
             var config = require(configFileLocation);
 
-            // Create a simple random bot
-            class RandomBot extends BaseBot {
-                start(viewUrl) {
-                    log.info("Game start. View at:", viewUrl);
-                }
-
-                move() {
-                    var choices = ["North", "East", "South", "West", "Stay"];
-                    var move = choices[Math.floor(Math.random()*choices.length)];
-                    log.info("Sent move:", move);
-                    return move;
-                }
-
-                end(winner) {
-                    if (typeof winner === "string") {
-                        log.info("Game end. Winner:", winner);
-                    } else {
-                        log.info("Game end. Winner:", winner.name);
-                    }
-                }
-
-                crashed(reason) {
-                    log.error("Game crashed.", reason);
-                }
-            }
-
             // Start a game
             var game = new Game({
                 name: "giodamelio",
@@ -48,11 +22,11 @@ module.exports = function(commander, log) {
                 server_url: config.servers[0].url,
                 mode: "training",
                 turns: 20,
-                bot: new RandomBot()
+                botPath: config.bots[0].path
             });
 
             var runner = new Runner({
-                game
+                game, log
             });
             runner.start();
         });

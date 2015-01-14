@@ -25,9 +25,8 @@ class Game {
             turns: joi
                 .number()
                 .optional(),
-            bot: joi
-                .object()
-                .type(BaseBot)
+            botPath: joi
+                .string()
                 .required()
         });
         joi.assert(options, optionsSchema);
@@ -38,7 +37,7 @@ class Game {
         this.server_url = options.server_url;
         this.mode = options.mode;
         this.turns = options.turns;
-        this.bot = options.bot;
+        this.botPath = options.botPath;
 
         // Keep track of turns
         this.states = [];
