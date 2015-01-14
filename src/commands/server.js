@@ -1,8 +1,12 @@
 var path = require("path");
 
+var r = require("rethinkdb");
+var jayschema = require("jayschema");
+
 var Game = require("../game/game");
 var Runner = require("../game/runner");
 var BaseBot = require("../game/baseBot");
+var GameSchema = require("../schemas/game");
 
 module.exports = function(commander, log) {
     commander
@@ -15,20 +19,55 @@ module.exports = function(commander, log) {
                 env.config || path.join(process.cwd(), "./config.json");
             var config = require(configFileLocation);
 
-            // Start a game
-            var game = new Game({
-                name: "giodamelio",
-                key: config.servers[0].users[0].key,
-                server_url: config.servers[0].url,
-                mode: "training",
-                turns: 20,
-                botPath: config.bots[0].path
-            });
+            //Connect to rethinkdb
+            r.connect({
+                db: "vindiniumBots"
+            }).then(function(conn) {
+                // Query the db every second and check for new games to start
+                setInterval(() => {
+                    r
+                        .table("Games")
+                        .filter(
+                            r.row("status").eq("pending")
+                        )
+                        .run(conn)
+                        .then(function(cursor) {
+                            cursor.each(function(error, pendingGame) {
+                                if (error) {
+                                    log.error(error);
+                                    return;
+                                }
 
-            var runner = new Runner({
-                game, log
+                                // Validate the game
+                                 var validator = new jayschema();
+                                 var errs = validator.validate(pendingGame, GameSchema);
+                                 if (errs.length > 0) {
+                                     log.error(errs);
+                                     return;
+                                 }
+
+                                 // Change status to playing
+                                 r
+                                     .table("Games")
+                                     .get(pendingGame.id)
+                                     .update({
+                                         status: "playing"
+                                     })
+                                    .run(conn)
+                                    .then(function() {
+                                        // Start a game
+                                        var game = new Game(pendingGame);
+                                        var runner = new Runner({
+                                            game, log
+                                        });
+                                        runner.start();
+                                    });
+                            });
+                        });
+                }, 1000);
+            }).error(function(error) {
+                throw error;
             });
-            runner.start();
         });
 };
 

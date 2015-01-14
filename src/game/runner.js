@@ -28,7 +28,7 @@ class Runner extends EventEmitter {
         }, (error, response, body) => {
             // Send start event to the bot
             this.game.bot.start(body.viewUrl);
-            this.emit("started");
+            this.emit("started", body);
 
             // Send out move
             this._respond(body);
