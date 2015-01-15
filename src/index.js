@@ -15,6 +15,9 @@ var log = bunyan.createLogger({
 // Create server command
 require("./commands/server")(commander, log);
 
+// Create web client
+require("./commands/web-client")(commander, log);
+
 // Parse args and run command
 commander
     .parse(process.argv);
