@@ -9,6 +9,7 @@ class Runner extends EventEmitter {
     constructor(options) {
         // Add options to class
         this.game = options.game;
+        this.log = options.log;
 
         // Make an instence of our bot
         var bot = require(path.resolve(process.cwd(), this.game.bot_path));
@@ -26,6 +27,9 @@ class Runner extends EventEmitter {
                 map: this.game.map
             }
         }, (error, response, body) => {
+            // Set bot log to a child logger
+            this.game.bot.log = this.log.child({ gameId: body.game.id });
+
             // Send start event to the bot
             this.game.bot.start(body.viewUrl);
             this.emit("started", body);
