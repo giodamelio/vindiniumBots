@@ -1,3 +1,10 @@
+// Setup 6to5
+require("6to5/register")({
+    blacklist: [
+        "generators"
+    ]
+});
+
 var commander = require("commander");
 var bunyan = require("bunyan");
 
