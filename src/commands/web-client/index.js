@@ -1,3 +1,5 @@
+var path = require("path");
+
 var koa = require("koa");
 var koaStatic = require("koa-static");
 var koaMount = require("koa-mount");
@@ -9,6 +11,9 @@ module.exports = function(commander, log) {
         .option("-a, --auth <path>", "Set the loacation of the auth file. Defaults to ./auth.json")
         .action(function(env) {
             var server = koa();
+
+            // Serve static app
+            server.use(koaStatic(path.join(__dirname, "static")));
 
             server.use(function* () {
                 this.body = "Hello World!";
