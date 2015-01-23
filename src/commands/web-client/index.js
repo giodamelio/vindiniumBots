@@ -1,8 +1,9 @@
 var path = require("path");
 
 var koa = require("koa");
-var koaStatic = require("koa-static");
-var koaMount = require("koa-mount");
+var staticFiles = require("koa-static");
+var mount = require("koa-mount");
+var router = require("koa-joi-router");
 
 module.exports = function(commander, log) {
     commander
@@ -13,11 +14,18 @@ module.exports = function(commander, log) {
             var server = koa();
 
             // Serve static app
-            server.use(koaStatic(path.join(__dirname, "static")));
+            server.use(staticFiles(path.join(__dirname, "static")));
 
-            server.use(function* () {
-                this.body = "Hello World!";
+            // Serve the api
+            var api = router();
+            api.route({
+                method: "GET",
+                path: "/",
+                handler: function*() {
+                    this.body = "Hello API!";
+                }
             });
+            server.use(mount("/api", api.middleware()));
 
             server.listen(3141);
             log.info("Server listening on http://localhost:3141");
