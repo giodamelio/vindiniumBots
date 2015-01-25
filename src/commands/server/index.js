@@ -29,18 +29,35 @@ module.exports = function(commander, log) {
                     .exec();
 
                 if (pendingGameData) {
+                    // Get the current game
+                    var currentGame = yield Models.Game
+                        .findById(pendingGameData._id)
+                        .exec();
+
                     // Set the status to playing
-                    log.info("Setting status to \"playing\"");
-                    var tmp = yield Models.Game
-                        .findByIdAndUpdate(
-                                pendingGameData._id,
-                                { status: "playing" }
-                        )
+                    yield currentGame
+                        .update({ status: "playing" })
                         .exec();
 
                     // Create a new game
                     log.info("Starting game");
                     var game = new Game(pendingGameData, log);
+
+                    // Handle crashes
+                    game.on("crash", suspend(function*() {
+                        yield currentGame
+                            .update({ status: "crashed" })
+                            .exec();
+                    }));
+
+                    // Handle game end
+                    game.on("end", suspend(function*(winner) {
+                        yield currentGame
+                            .update({ status: "done" })
+                            .exec();
+                    }));
+
+                    // Start the game
                     game.start();
                 }
             }), 1000);
