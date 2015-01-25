@@ -5,7 +5,6 @@ var Game = mongoose.model("Game", {
     key: {
         type: String,
         required: false,
-        unique: true,
         validate: [function(val) {
             return val.length == 8;
         }, "Key must have 8 charcters"]

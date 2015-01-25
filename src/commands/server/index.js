@@ -25,19 +25,28 @@ module.exports = function(commander, log) {
             // Query the db every second and check for new games to start
             var id = setInterval(suspend(function*() {
                 // Look for games with a status of pending
-                var newGame = yield Models
-                    .Game
+                var pendingGameData = yield Models.Game
                     .findOne({ status: "pending" })
                     .exec();
 
-                log.info(newGame);
+                if (pendingGameData) {
+                    // Set the status to playing
+                    log.info("Setting status to \"playing\"");
+                    var tmp = yield Models.Game
+                        .findByIdAndUpdate(
+                                pendingGameData._id,
+                                { status: "playing" }
+                        )
+                        .exec();
 
-                // Create a new game
-                // var game = new Game({});
-                // var runner = new Runner({
-                //     log, game
-                // });
-                // runner.start();
+                    // Create a new game
+                    log.info("Starting game");
+                    var game = new Game(pendingGameData);
+                    var runner = new Runner({
+                        log, game
+                    });
+                    runner.start();
+                }
             }), 1000);
 
             // Listen for Control-C and close nicely

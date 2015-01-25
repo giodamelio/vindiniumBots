@@ -1,4 +1,3 @@
-var path = require("path");
 var EventEmitter = require("events").EventEmitter;
 
 var request = require("request");
@@ -12,7 +11,7 @@ class Runner extends EventEmitter {
         this.log = options.log;
 
         // Make an instence of our bot
-        var bot = require(path.resolve(process.cwd(), this.game.bot_path));
+        var bot = require(this.game.bot_path);
         this.game.bot = new bot(options.log);
     }
     
