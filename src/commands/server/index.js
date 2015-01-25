@@ -6,7 +6,7 @@ var suspend = require("suspend");
 var Game = require("../../game/game");
 var Runner = require("../../game/runner");
 var BaseBot = require("../../game/baseBot");
-var GameSchema = require("../../schemas/game");
+var Models = require("../../models");
 
 module.exports = function(commander, log) {
     commander
@@ -24,6 +24,14 @@ module.exports = function(commander, log) {
            
             // Query the db every second and check for new games to start
             var id = setInterval(suspend(function*() {
+                // Look for games with a status of pending
+                var newGame = yield Models
+                    .Game
+                    .findOne({ status: "pending" })
+                    .exec();
+
+                log.info(newGame);
+
                 // Create a new game
                 // var game = new Game({});
                 // var runner = new Runner({

@@ -1,5 +1,4 @@
 var BaseBot = require("./baseBot");
-var GameSchema = require("../schemas/game");
 
 class Game {
     // Create a new game
