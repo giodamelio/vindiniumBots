@@ -3,8 +3,7 @@ var path = require("path");
 var mongoose = require("mongoose");
 var suspend = require("suspend");
 
-var Game = require("../../game/game");
-var Runner = require("../../game/runner");
+var Game = require("../../game");
 var BaseBot = require("../../game/baseBot");
 var Models = require("../../models");
 
@@ -41,11 +40,8 @@ module.exports = function(commander, log) {
 
                     // Create a new game
                     log.info("Starting game");
-                    var game = new Game(pendingGameData);
-                    var runner = new Runner({
-                        log, game
-                    });
-                    runner.start();
+                    var game = new Game(pendingGameData, log);
+                    game.start();
                 }
             }), 1000);
 

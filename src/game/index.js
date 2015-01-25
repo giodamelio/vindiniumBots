@@ -2,35 +2,42 @@ var EventEmitter = require("events").EventEmitter;
 
 var request = require("request");
 
-var Game = require("./game");
+var BaseBot = require("./baseBot");
 
-class Runner extends EventEmitter {
-    constructor(options) {
+class Game extends EventEmitter {
+    // Create a new game
+    constructor(options, log) {
         // Add options to class
-        this.game = options.game;
-        this.log = options.log;
+        this.key = options.key;
+        this.server_url = options.server_url;
+        this.mode = options.mode;
+        this.turns = options.turns;
+        this.log = log;
 
-        // Make an instence of our bot
-        var bot = require(this.game.bot_path);
-        this.game.bot = new bot(options.log);
+        // Get the bot from the fs
+        var bot = require(options.bot_path);
+        this.bot = new bot(options.log);
+
+        // Keep track of turns
+        this.states = [];
     }
-    
-    // Start the game
+
+        // Start the game
     start() {
         request({
             method: "POST",
-            url: this.game.server_url + "/api/" + this.game.mode,
+            url: this.server_url + "/api/" + this.mode,
             json: {
-                key: this.game.key,
-                turns: this.game.turns,
-                map: this.game.map
+                key: this.key,
+                turns: this.turns,
+                map: this.map
             }
         }, (error, response, body) => {
             // Set bot log to a child logger
-            this.game.bot.log = this.log.child({ gameId: body.game.id });
+            this.bot.log = this.log.child({ gameId: body.game.id });
 
             // Send start event to the bot
-            this.game.bot.start(body.viewUrl);
+            this.bot.start(body.viewUrl);
             this.emit("started", body);
 
             // Send out move
@@ -41,7 +48,7 @@ class Runner extends EventEmitter {
     // Make a move
     _respond(state) {
         if (state === "Vindinium - Time out! You must play faster") {
-            this.game.bot.crashed("Timeout");
+            this.bot.crashed("Timeout");
             this.emit("crashed", "Timeout");
             return;
         }
@@ -50,7 +57,7 @@ class Runner extends EventEmitter {
         if (state.game.finished) {
             // If we crashed tell the bot
             if (state.hero.crashed) {
-                this.game.bot.crashed();
+                this.bot.crashed();
                 this.emit("crashed");
 
                 // Record the state
@@ -71,15 +78,15 @@ class Runner extends EventEmitter {
 
             if (winner.gold === 0) {
                 // Draw
-                this.game.bot.end("Draw");
+                this.bot.end("Draw");
                 this.emit("ended", "Draw");
             } else if (heroesByGold[0].gold === heroesByGold[1].gold) {
                 // Two winners = draw
-                this.game.bot.end("Draw");
+                this.bot.end("Draw");
                 this.emit("ended", "Draw");
             } else {
                 // Single winner
-                this.game.bot.end(winner);
+                this.bot.end(winner);
                 this.emit("ended", winner);
             }
 
@@ -92,7 +99,7 @@ class Runner extends EventEmitter {
         }
 
         // Get the next turn from the bot
-        var move = this.game.bot.move();
+        var move = this.bot.move();
         this.emit("move", state, move);
 
         // Save the state and move
@@ -103,7 +110,7 @@ class Runner extends EventEmitter {
             method: "POST",
             url: state.playUrl,
             json: {
-                key: this.game.key,
+                key: this.key,
                 dir: move
             }
         }, (error, response, body) => {
@@ -113,12 +120,12 @@ class Runner extends EventEmitter {
 
     // Save the current state of the game optionally store the move to be made
     _recordState(state, move) {
-        this.game.states.push({
+        this.states.push({
             rawState: state,
             move: move
         });
     }
 }
 
-module.exports = Runner;
+module.exports = Game;
 
