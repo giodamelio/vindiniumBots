@@ -38,7 +38,7 @@ class Game extends EventEmitter {
 
             // Send start event to the bot
             this.bot.start(body.viewUrl);
-            this.emit("started", body);
+            this.emit("start", body);
 
             // Send out move
             this._respond(body);
@@ -49,7 +49,7 @@ class Game extends EventEmitter {
     _respond(state) {
         if (state === "Vindinium - Time out! You must play faster") {
             this.bot.crashed("Timeout");
-            this.emit("crashed", "Timeout");
+            this.emit("crash", "Timeout");
             return;
         }
             
@@ -58,7 +58,7 @@ class Game extends EventEmitter {
             // If we crashed tell the bot
             if (state.hero.crashed) {
                 this.bot.crashed();
-                this.emit("crashed");
+                this.emit("crash");
 
                 // Record the state
                 this._recordState({
@@ -79,15 +79,15 @@ class Game extends EventEmitter {
             if (winner.gold === 0) {
                 // Draw
                 this.bot.end("Draw");
-                this.emit("ended", "Draw");
+                this.emit("end", "Draw");
             } else if (heroesByGold[0].gold === heroesByGold[1].gold) {
                 // Two winners = draw
                 this.bot.end("Draw");
-                this.emit("ended", "Draw");
+                this.emit("end", "Draw");
             } else {
                 // Single winner
                 this.bot.end(winner);
-                this.emit("ended", winner);
+                this.emit("end", winner);
             }
 
             // Save the state
