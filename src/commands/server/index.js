@@ -4,10 +4,10 @@ var r = require("rethinkdb");
 var jayschema = require("jayschema");
 var suspend = require("suspend");
 
-var Game = require("../game/game");
-var Runner = require("../game/runner");
-var BaseBot = require("../game/baseBot");
-var GameSchema = require("../schemas/game");
+var Game = require("../../game/game");
+var Runner = require("../../game/runner");
+var BaseBot = require("../../game/baseBot");
+var GameSchema = require("../../schemas/game");
 
 module.exports = function(commander, log) {
     commander
@@ -80,4 +80,3 @@ module.exports = function(commander, log) {
             });
         }));
 };
-
