@@ -8,8 +8,8 @@ var SayHello = React.createClass({
     }
 });
 
-React.renderComponent(
+React.render(
     <SayHello name="Gio"/>,
-    document.getElementById("app")
+    document.body
 );
 
