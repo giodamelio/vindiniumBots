@@ -14,10 +14,6 @@
     "url": "https://github.com/giodamelio/vindiniumBots/issues"
   },
   "homepage": "https://github.com/giodamelio/vindiniumBots",
-  "devDependencies": {
-    "gulp": "^3.8.10",
-    "gulp-6to5": "^2.0.0"
-  },
   "dependencies": {
     "6to5": "^2.12.5",
     "bunyan": "^1.2.3",
