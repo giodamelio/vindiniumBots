@@ -43,6 +43,13 @@ module.exports = function(commander, log) {
                     log.info("Starting game");
                     var game = new Game(pendingGameData, log);
 
+                    // Add game id to db
+                    game.on("start", suspend(function*(state) {
+                        yield currentGame
+                            .update({ gameId: state.game.id })
+                            .exec();
+                    }));
+
                     // Handle crashes
                     game.on("crash", suspend(function*() {
                         yield currentGame

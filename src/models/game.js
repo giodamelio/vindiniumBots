@@ -9,6 +9,9 @@ var Game = mongoose.model("Game", {
             return val.length == 8;
         }, "Key must have 8 charcters"]
     },
+    gameId: {
+        type: String
+    },
     status: {
         type: String,
         enum: ["pending", "playing", "done", "errored"]
