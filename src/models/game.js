@@ -35,7 +35,7 @@ var Game = mongoose.model("Game", {
         enum: ["training", "arena"]
     },
     // The length the game will be
-    turns: {
+    length: {
         type: Number
     },
     // The path to the bots source file

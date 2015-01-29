@@ -11,7 +11,7 @@ class Game extends EventEmitter {
         this.key = options.key;
         this.server_url = options.server_url;
         this.mode = options.mode;
-        this.turns = options.turns;
+        this.length = options.length;
         this.log = log;
 
         // Get the bot from the fs
@@ -19,7 +19,7 @@ class Game extends EventEmitter {
         this.bot = new bot(options.log);
 
         // Keep track of turns
-        this.states = [];
+        this.turns = [];
     }
 
         // Start the game
@@ -29,7 +29,7 @@ class Game extends EventEmitter {
             url: this.server_url + "/api/" + this.mode,
             json: {
                 key: this.key,
-                turns: this.turns,
+                turns: this.length,
                 map: this.map
             }
         }, (error, response, body) => {
@@ -120,7 +120,7 @@ class Game extends EventEmitter {
 
     // Save the current state of the game optionally store the move to be made
     _recordState(state, move) {
-        this.states.push({
+        this.turns.push({
             rawState: state,
             move: move
         });
