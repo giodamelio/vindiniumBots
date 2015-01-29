@@ -1,15 +1,15 @@
 var SayHello = React.createClass({
     render: function(){
         if (this.props.name) {
-            return React.DOM.h1(null, "Hello " + this.props.name + "!");
+            return <h1>Hello {this.props.name}!</h1>
         } else {
-            return React.DOM.h1(null, "Hello World!");
+            return <h1>Hello World!</h1>
         }
     }
 });
 
 React.renderComponent(
-    SayHello({name: "Gio"}),
+    <SayHello name="Gio"/>,
     document.getElementById("app")
 );
 
