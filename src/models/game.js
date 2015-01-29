@@ -16,6 +16,10 @@ var Game = mongoose.model("Game", {
         type: String,
         enum: ["pending", "playing", "done", "errored"]
     },
+    fullGame: {
+        type: Boolean,
+        default: false
+    },
     server_url: {
         type: String,
         required: true
