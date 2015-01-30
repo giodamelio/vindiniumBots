@@ -7,9 +7,10 @@ export SRC := $(CURDIR)/src
 all:
 	@$(MAKE) -j api app bots game manager models
 
-all-watch:
+dev:
 	@$(MAKE) -j \
 		api-watch \
+		api-server \
 		app-watch \
 		bots-watch \
 		game-watch \
@@ -22,6 +23,9 @@ api: $(shell find $(SRC)/api/ -type f -name "*.js")
 
 api-watch: $(shell find $(SRC)/api/ -type f -name "*.js")
 	@$(MAKE) -C src/api/ watch
+
+api-server:
+	@$(MAKE) -C src/api/ server
 
 # --- App ---
 app: $(shell find $(SRC)/app/js/ -type f -name "*.jsx")
@@ -64,5 +68,5 @@ clean:
 	@rm -r dist/
 	
 # Tell make which targets don't take dependencies
-.PHONY: clean all all-watch
+.PHONY: clean all all-watch api-server
 

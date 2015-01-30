@@ -9,3 +9,6 @@ build: $(shell find . -type f -name "*.js")
 watch: $(shell find . -type f -name "*.js")
 	@6to5 --watch $(6TO5_ARGS) $^
 
+server:
+	@nodemon --exec iojs --watch $(DIST)/api/ $(DIST)/api/index.js
+
