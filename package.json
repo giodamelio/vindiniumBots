@@ -5,17 +5,7 @@
   "author": "Gio d'Amelio",
   "private": true,
   "main": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/giodamelio/vindiniumBots.git"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/giodamelio/vindiniumBots/issues"
-  },
-  "homepage": "https://github.com/giodamelio/vindiniumBots",
   "dependencies": {
-    "6to5": "^2.12.5",
     "bunyan": "^1.2.3",
     "commander": "^2.6.0",
     "joi": "^5.1.0",
@@ -26,5 +16,21 @@
     "mongoose": "^3.8.22",
     "request": "^2.51.0",
     "suspend": "^0.6.1"
-  }
+  },
+  "devDependencies": {
+    "6to5": "^3.1.1",
+    "6to5ify": "^4.0.0",
+    "browserify": "^8.1.1",
+    "reactify": "^1.0.0",
+    "watchify": "^2.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giodamelio/vindiniumBots.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/giodamelio/vindiniumBots/issues"
+  },
+  "homepage": "https://github.com/giodamelio/vindiniumBots"
 }
