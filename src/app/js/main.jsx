@@ -1,3 +1,5 @@
+var React = require("react");
+
 var SayHello = React.createClass({
     render: function(){
         if (this.props.name) {
@@ -14,6 +16,6 @@ var SayHello = React.createClass({
 
 React.render(
     <SayHello name="Gio"/>,
-    document.body
+    document.getElementById("app")
 );
 
