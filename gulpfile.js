@@ -12,7 +12,8 @@ var paths = {
     src: {
         api: "src/api/**/*.js",
         app: {
-            js: "./src/app/js/main.jsx",
+            jsEntry: "./src/app/js/main.js",
+            js: "src/app/js/**/*.js",
             html: "src/app/**/*.html"
         },
         bots: "src/bots/**/*.js",
@@ -52,7 +53,7 @@ gulp.task("api:server", function() {
 
 gulp.task("app", function() {
     // Build our app with browserify, 6to5 and react
-    browserify(paths.src.app.js)
+    browserify(paths.src.app.jsEntry)
         .transform(reactify)
         .transform(to5ify)
         .bundle()
