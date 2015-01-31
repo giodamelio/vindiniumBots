@@ -16,20 +16,14 @@ var Router = React.createClass({
 
     // Define our routes
     componentDidMount: function() {
-        page("/", (ctx) => {
-            console.log("At ", ctx);
-            this.setState({
-                component: <div>
-                    <h1>Homepage</h1>
-                    <a href="/haha">HAHA</a>
-                </div>
-            });
-        });
+        this.props.routes.forEach((route) => {
+            var url = route[0];
+            var Component = route[1];
 
-        page("/haha", (ctx) => {
-            console.log("At ", ctx);
-            this.setState({
-                component: <h1>HAHA</h1>
+            page(url, (ctx) => {
+                this.setState({ 
+                    component: <Component params={ctx.params} querystring={ctx.querystring} /> 
+                });
             });
         });
 
