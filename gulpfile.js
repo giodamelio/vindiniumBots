@@ -11,7 +11,10 @@ var del = require("del");
 var paths = {
     src: {
         api: "src/api/**/*.js",
-        app: "./src/app/js/main.jsx",
+        app: {
+            js: "./src/app/js/main.jsx",
+            html: "src/app/**/*.html"
+        },
         bots: "src/bots/**/*.js",
         game: "src/game/**/*.js",
         manager: "src/manager/**/*.js",
@@ -40,19 +43,24 @@ gulp.task("api", function() {
 gulp.task("api:server", function() {
     nodemon({
         script: "dist/api/index.js",
+        watch: "dist/api/",
         execMap: {
             "js": "iojs"
         }
     });
 });
 
-// Build our app with browserify, 6to5 and react
 gulp.task("app", function() {
-    browserify(paths.src.app)
+    // Build our app with browserify, 6to5 and react
+    browserify(paths.src.app.js)
         .transform(reactify)
         .transform(to5ify)
         .bundle()
         .pipe(source("bundle.js"))
+        .pipe(gulp.dest(paths.dest.app));
+
+    // Move html file
+    gulp.src(paths.src.app.html)
         .pipe(gulp.dest(paths.dest.app));
 });
 
@@ -103,7 +111,7 @@ gulp.task("all", ["api", "app", "bots", "game", "manager", "models"]);
 // Build and watch all the modules
 gulp.task("watch", ["all"], function() {
     gulp.watch(paths.src.api, ["api"]);
-    gulp.watch(paths.src.app, ["app"]);
+    gulp.watch([paths.src.app.js, paths.src.app.html], ["app"]);
     gulp.watch(paths.src.bots, ["bots"]);
     gulp.watch(paths.src.game, ["game"]);
     gulp.watch(paths.src.manager, ["manager"]);
