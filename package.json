@@ -17,6 +17,7 @@
     "npm": "^2.4.1",
     "page": "^1.6.0",
     "react": "^0.12.2",
+    "react-router": "^0.11.6",
     "request": "^2.51.0",
     "suspend": "^0.6.1",
     "thunkify": "^2.1.2"

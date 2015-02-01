@@ -1,12 +1,22 @@
 var React = require("react");
+var Router = require("react-router");
 
-var Router = require("./router");
+var Route = Router.Route,
+    DefaultRoute = Router.DefaultRoute,
+    Link=Router.Link,
+    RouteHandler = Router.RouteHandler;
 
-var HomePage = React.createClass({
+var App = React.createClass({
+    render: function() {
+        return <RouteHandler/>;
+    }
+});
+
+var Dashboard = React.createClass({
     render: function() {
         return <div>
-            <h1>Home page</h1>
-            <a href="/haha">HAHA</a>
+            <h1>Dashboard</h1>
+            <Link to="haha">HAHA</Link>
         </div>;
     }
 });
@@ -21,13 +31,18 @@ var HAHA = React.createClass({
 });
 
 // Define our routes
-var routes = [
-    ["/", HomePage],
-    ["/haha", HAHA]
-];
-
-React.render(
-    <Router routes={routes} />,
-    document.getElementById("app")
+var routes = (
+    <Route name="app" path="/" handler={App}>
+        <DefaultRoute handler={Dashboard}/>
+        <Route name="haha" handler={HAHA}/>
+    </Route>
 );
+
+// Startup the app
+Router.run(routes, Router.HistoryLocation, function (Handler) {
+    React.render(
+        <Handler />,
+        document.getElementById("app")
+    );
+});
 
