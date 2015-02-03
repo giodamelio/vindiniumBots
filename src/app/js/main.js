@@ -5,32 +5,16 @@ var Route = Router.Route,
     DefaultRoute = Router.DefaultRoute,
     Link=Router.Link;
 
-var App = require("./App.js");
-
-var Dashboard = React.createClass({
-    render: function() {
-        return <div>
-            <h1>Dashboard</h1>
-            <Link to="haha">HAHA</Link>
-        </div>;
-    }
-});
-
-var HAHA = React.createClass({
-    render: function() {
-        return <div>
-            <h1>HAHA</h1>
-            <pre>{this.props.querystring}</pre>
-        </div>;
-    }
-});
+var App = require("./App");
+var Dashboard = require("./Dashboard");
+var Runner = require("./Runner");
 
 // Define our routes
 var routes = (
     <Route name="app" path="/" handler={App}>
         <DefaultRoute handler={Dashboard}/>
         <Route name="dashboard" path="/" handler={Dashboard} />
-        <Route name="haha" handler={HAHA} />
+        <Route name="runner" handler={Runner} />
     </Route>
 );
 

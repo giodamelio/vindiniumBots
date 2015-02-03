@@ -12,10 +12,10 @@ var App = React.createClass({
     render: function() {
         return (
             <div>
-                <Navbar inverse="true">
+                <Navbar inverse>
                     <Nav>
                         <NavItemLink to="dashboard">Dashboard</NavItemLink>
-                        <NavItemLink to="haha">haha</NavItemLink>
+                        <NavItemLink to="runner">Runner</NavItemLink>
                     </Nav>
                 </Navbar>
                 <RouteHandler/>
