@@ -6,17 +6,16 @@ var BaseBot = require("./baseBot");
 
 class Game extends EventEmitter {
     // Create a new game
-    constructor(options, log) {
+    constructor(options) {
         // Add options to class
         this.key = options.key;
         this.server_url = options.server_url;
         this.mode = options.mode;
         this.length = options.length;
-        this.log = log;
 
         // Get the bot from the fs
         var bot = require(options.bot_path);
-        this.bot = new bot(options.log);
+        this.bot = new bot();
 
         // Keep track of turns
         this.turns = [];
@@ -33,9 +32,6 @@ class Game extends EventEmitter {
                 map: this.map
             }
         }, (error, response, body) => {
-            // Set bot log to a child logger
-            this.bot.log = this.log.child({ gameId: body.game.id });
-
             // Send start event to the bot
             this.bot.start(body.viewUrl);
             this.emit("start", body);
