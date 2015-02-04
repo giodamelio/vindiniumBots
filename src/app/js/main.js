@@ -7,14 +7,14 @@ var Route = Router.Route,
 
 var App = require("./App");
 var Dashboard = require("./Dashboard");
-var Runner = require("./Runner");
+var Manager = require("./Manager");
 
 // Define our routes
 var routes = (
     <Route name="app" path="/" handler={App}>
         <DefaultRoute handler={Dashboard}/>
         <Route name="dashboard" path="/" handler={Dashboard} />
-        <Route name="runner" handler={Runner} />
+        <Route name="manager" handler={Manager} />
     </Route>
 );
 

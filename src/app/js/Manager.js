@@ -1,10 +1,10 @@
 var React = require("react");
 
-var Runner = React.createClass({
+var Manager = React.createClass({
     render: function() {
         return <h1>Run some games here</h1>;
     }
 });
 
-module.exports = Runner;
+module.exports = Manager;
 

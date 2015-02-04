@@ -15,7 +15,7 @@ var App = React.createClass({
                 <Navbar inverse>
                     <Nav>
                         <NavItemLink to="dashboard">Dashboard</NavItemLink>
-                        <NavItemLink to="runner">Runner</NavItemLink>
+                        <NavItemLink to="manager">Manager</NavItemLink>
                     </Nav>
                 </Navbar>
                 <RouteHandler/>
